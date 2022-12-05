@@ -5,9 +5,18 @@ module.exports = {
     extend: {
       colors: {
         "green": "#1db954",
-        "dark": "#191919"
+        "black-base": "#121212",
+        "black-primary": "191414",
+        "black-secondary": "#171818",
+        "light-black": "#282828",
+        "primary": "#fff",
+        "secondary": "#b3b3b3",
+        "gray": "#535353"
+      },
+      gridTemplateColumns: {
+        "grid-autofill-cards": "repeat(auto-fill, minmax(200px, 1fr))"
       }
     }
   },
-  plugins: []
+  plugins: [require("@tailwindcss/line-clamp")]
 };

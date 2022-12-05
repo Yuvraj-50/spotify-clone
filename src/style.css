@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.grid-template-areas {
+  grid-template-areas:
+    "sidenav main"
+    "now-playing now-playing";
+}
+
+.grid-template-areas .main-content {
+  grid-area: main;
+}
+
+.grid-template-areas .side-nav {
+  grid-area: sidenav;
+}
+
+.grid-template-areas .now-playing {
+  grid-area: now-playing;
+}
+
+.track:hover .track-number,
+.track.selected .track-number {
+  visibility: hidden;
+}
+.track:hover .play,
+.track.selected .play {
+  visibility: visible;
+}
+
+.track.playing .track-number,
+.track.playing .song-title {
+  color: theme("colors.green");
+}
