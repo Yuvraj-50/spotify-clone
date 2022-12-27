@@ -1,11 +1,11 @@
-import {fetchRequest} from "../api";
+import { fetchRequest } from "../api";
 import {
   ENDPOINT,
   getItemFromLocalStorage,
   LOADED_TRACKS,
   logout,
   SECTIONTYPE,
-  setItemsInLocalStorate
+  setItemsInLocalStorate,
 } from "../common";
 
 const audio = new Audio();
@@ -18,7 +18,7 @@ const loadUserProfile = () => {
     const profilePicture = document.getElementById("profile-picture");
     const profileBtn = document.getElementById("user-profile-btn");
     const displayNameEle = document.getElementById("display-name");
-    const {display_name: displayName, images} = await fetchRequest(
+    const { display_name: displayName, images } = await fetchRequest(
       ENDPOINT.userInfo
     );
 
@@ -30,7 +30,7 @@ const loadUserProfile = () => {
       profilePicture.classList.remove("hidden");
       defaultProfileImg.classList.add("hidden");
     }
-    resolve({displayName});
+    resolve({ displayName });
   });
 };
 
@@ -47,7 +47,7 @@ const onProfileBtnClick = (e) => {
 ////// get featured playlist //////////////////
 
 const onFeaturedPlaylistClick = (e, id) => {
-  const section = {type: SECTIONTYPE.PLAYLIST, playListId: id};
+  const section = { type: SECTIONTYPE.PLAYLIST, playListId: id };
   history.pushState(section, "", `playlist/${id}`);
   loadSections(section);
 };
@@ -55,16 +55,16 @@ const onFeaturedPlaylistClick = (e, id) => {
 const loadPlayList = async (endpoint, elementid) => {
   const FeaturedplaylistSection = document.getElementById(`${elementid}`);
   const {
-    playlists: {items}
+    playlists: { items },
   } = await fetchRequest(endpoint);
 
-  for (let {name, description, images, id} of items) {
+  for (let { name, description, images, id } of items) {
     const playListItem = document.createElement("section");
     playListItem.className =
-      "bg-black-secondary rounded p-4  cursor-pointer hover:bg-light-black";
+      "bg-black-secondary rounded p-4 cursor-pointer hover:bg-light-black";
     playListItem.id = id;
     playListItem.setAttribute("data-type", "playlist");
-    const [{url: imageUrl}] = images;
+    const [{ url: imageUrl }] = images;
     playListItem.innerHTML = `
       <img src="${imageUrl}" alt="${name}" class="mb-2 rounded object-contain shadow" />
       <h2 class="text-base font-semibold truncate">${name}</h2>
@@ -88,16 +88,14 @@ const fillContentForDashboard = () => {
   coverContent.innerHTML = `<h1 class="text-6xl">Hello ${displayName}</h1>`;
   const playistMap = new Map([
     ["featured", "featured-playist-items"],
-    ["top playlist", "top-playlist-items"]
+    ["top playlist", "top-playlist-items"],
   ]);
   let html = "";
   for (let [type, id] of playistMap) {
     html += `
         <article class="p-4">
           <h1 class="text-2xl mb-4 font-bold capitalize">${type}</h1>
-          <section class="featured-songs grid grid-cols-grid-autofill-cards gap-4 "
-              id="${id}">
-          </section>
+          <section id="${id}" class="featured-songs grid grid-cols-auto-fill-cards gap-4 "></section>
         </article>
     `;
   }
@@ -156,26 +154,26 @@ const findCurrentTrack = () => {
     const currentTrackIndex = loadedTracks?.findIndex(
       (trk) => trk.id === trackId
     );
-    return {currentTrackIndex, tracks: loadedTracks};
+    return { currentTrackIndex, tracks: loadedTracks };
   }
   return null;
 };
 
 const nextPlayTrack = () => {
-  const {currentTrackIndex = -1, tracks = null} = findCurrentTrack() ?? {};
+  const { currentTrackIndex = -1, tracks = null } = findCurrentTrack() ?? {};
   if (currentTrackIndex > -1 && currentTrackIndex < tracks?.length - 1) {
     playTrack(null, tracks[currentTrackIndex + 1]);
   }
 };
 
 const previousPlayTrack = () => {
-  const {currentTrackIndex = -1, tracks = null} = findCurrentTrack() ?? {};
+  const { currentTrackIndex = -1, tracks = null } = findCurrentTrack() ?? {};
   if (currentTrackIndex > 0) {
     playTrack(null, tracks[currentTrackIndex - 1]);
   }
 };
 
-const playTrack = (e, {image, artistName, name, previewUrl, id}) => {
+const playTrack = (e, { image, artistName, name, previewUrl, id }) => {
   if (e?.stopPropagation) {
     e?.stopPropagation();
   }
@@ -198,7 +196,7 @@ const playTrack = (e, {image, artistName, name, previewUrl, id}) => {
   }
 };
 
-const loadPlaylistTracks = ({tracks}) => {
+const loadPlaylistTracks = ({ tracks }) => {
   const trackSection = document.querySelector("#tracks");
   const loadedTracks = [];
   let trackNo = 1;
@@ -209,11 +207,11 @@ const loadPlaylistTracks = ({tracks}) => {
       name,
       album,
       duration_ms: duration,
-      preview_url: previewUrl
+      preview_url: previewUrl,
     } = trackItem.track;
     let track = document.createElement("section");
     track.id = id;
-    let {url: image} = album.images.find((img) => img.height === 64);
+    let { url: image } = album.images.find((img) => img.height === 64);
     let artistName = Array.from(artists, (artist) => artist.name).join(", ");
     track.className =
       "track p-1 cursor-pointer grid grid-cols-[50px_1fr_1fr_50px] gap-4 place-content-center items-center hover:bg-light-black rounded-md text-secondary";
@@ -235,11 +233,19 @@ const loadPlaylistTracks = ({tracks}) => {
     playButton.className = `play w-full left-0 text-lg invisible absolute material-symbols-outlined`;
     playButton.textContent = "play_arrow";
     playButton.addEventListener("click", (e) =>
-      playTrack(e, {image: image, artistName, name, previewUrl, id})
+      playTrack(e, { image: image, artistName, name, previewUrl, id })
     );
     track.querySelector("p").appendChild(playButton);
     trackSection.appendChild(track);
-    loadedTracks.push({id, artists, name, album, previewUrl, duration, image});
+    loadedTracks.push({
+      id,
+      artists,
+      name,
+      album,
+      previewUrl,
+      duration,
+      image,
+    });
   }
   setItemsInLocalStorate(LOADED_TRACKS, loadedTracks);
 };
@@ -255,7 +261,7 @@ const fillContentforPlayList = async (id) => {
     name,
     description,
     images: [image],
-    tracks
+    tracks,
   } = playist;
   coverElement.innerHTML = `
   <section class="grid gap-4 grid-cols-[auto_1fr]">
@@ -286,7 +292,7 @@ const fillContentforPlayList = async (id) => {
 };
 
 const onContentScroll = (e) => {
-  const {scrollTop} = e.target;
+  const { scrollTop } = e.target;
   const header = document.querySelector(".header");
   const coverContent = document.getElementById("cover-content");
   const totalHeight = coverContent.offsetHeight;
@@ -330,7 +336,7 @@ const loadSections = (section) => {
 };
 
 const onUserPlaylistClick = (id) => {
-  const section = {type: SECTIONTYPE.PLAYLIST, playListId: id};
+  const section = { type: SECTIONTYPE.PLAYLIST, playListId: id };
   history.pushState(section, "", `/dashboard/playlist/${id}`);
   loadSections(section);
 };
@@ -338,7 +344,7 @@ const onUserPlaylistClick = (id) => {
 const loadUserPlaylist = async () => {
   const userplaylists = await fetchRequest(ENDPOINT.userplaylist);
   const userPlaylistSection = document.querySelector("#user-playlists > ul");
-  for (let {name, id} of userplaylists.items) {
+  for (let { name, id } of userplaylists.items) {
     const li = document.createElement("li");
     li.textContent = name;
     li.className = "cursor-pointer hover:text-primary";
@@ -360,13 +366,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const previous = document.getElementById("previous");
   let progressInterval;
 
-  ({displayName} = await loadUserProfile());
+  ({ displayName } = await loadUserProfile());
   loadUserPlaylist();
   // const section = {
   //   type: SECTIONTYPE.PLAYLIST,
   //   playListId: "37i9dQZF1DX1AVAcepRsUl"
   // };
-  const section = {type: SECTIONTYPE.DASHBOARD};
+  const section = { type: SECTIONTYPE.DASHBOARD };
   history.pushState(section, "", "");
   // history.pushState(section, "", `/dashboard/playlist/${section.playListId}`);
   loadSections(section);
